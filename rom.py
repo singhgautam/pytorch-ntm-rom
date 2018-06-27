@@ -100,6 +100,7 @@ class ROM(nn.Module):
         return w
 
     def _interpolate(self, w_prev, wc, g):
+        print 'w_prev.device {}'.format(w_prev.device)
         return g * wc + (1 - g) * w_prev
 
     def _shift(self, wg, s):
