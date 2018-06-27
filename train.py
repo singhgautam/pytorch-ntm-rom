@@ -30,17 +30,17 @@ def init_seed(seed=None):
     torch.manual_seed(seed)
     random.seed(seed)
 
-def generate_random_batch(params):
+def generate_random_batch(params, device = device):
     # All batches have the same sequence length
     seq_len = random.randint(params.sequence_min_len,
                              params.sequence_max_len)
     seq = np.random.binomial(1, 0.5, (seq_len,
                                       params.batch_size,
                                       params.sequence_width))
-    seq = torch.from_numpy(seq).float()
+    seq = torch.Tensor(seq, device = device)
 
     # The input includes an additional channel used for the delimiter
-    inp = torch.zeros(seq_len + 1, params.batch_size, params.sequence_width + 1)
+    inp = torch.zeros(seq_len + 1, params.batch_size, params.sequence_width + 1, device = device)
     inp[:seq_len, :, :params.sequence_width] = seq
     inp[seq_len, :, params.sequence_width] = 1.0  # delimiter in our control channel
     outp = seq.clone()
@@ -106,7 +106,11 @@ modelcell.memory.reset(params.batch_size)
 modelcell.state.reset(params.batch_size)
 modelcell.controller.reset_parameters()
 
-print 'Memory is on CUDA : {}'.format(modelcell.memory.memory.is_cuda)
+print 'modelcell.device {}'.format(modelcell.device)
+print 'modelcell.memory.device {}'.format(modelcell.memory.device)
+print 'modelcell.state.readstate.device {}'.format(modelcell.state.readstate.device)
+print 'modelcell.state.controllerstate.device {}'.format(modelcell.state.controllerstate.device)
+print 'modelcell.controller.device {}'.format(modelcell.controller.device)
 
 optimizer = optim.RMSprop(modelcell.parameters(),
                           momentum=params.rmsprop_momentum,
@@ -125,10 +129,7 @@ for batch_num in range(params.num_batches):
     optimizer.zero_grad()
 
     # generate data for the copy task
-    X, Y = generate_random_batch(params)
-
-    X.to(device)
-    Y.to(device)
+    X, Y = generate_random_batch(params, device = device)
 
     # input phase
     for i in range(X.size(0)):
