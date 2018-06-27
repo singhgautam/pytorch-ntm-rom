@@ -17,13 +17,10 @@ class ReadState(nn.Module):
             self.device = torch.device("cuda")
 
     def reset(self, batch_size):
-        self.w = torch.zeros(batch_size, self.memory.N)
+        self.w = torch.zeros(batch_size, self.memory.N, device = self.device)
         self.w[:,0] = 1.0 # set reader attention at first spot in the memory
         self.r = self.memory.read(self.w)
-
         print self.device
-        self.w.to(self.device)
-        self.r.to(self.device)
         print self.w.is_cuda
         print self.r.is_cuda
 
