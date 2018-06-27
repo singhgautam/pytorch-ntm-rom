@@ -82,12 +82,13 @@ class ROM(nn.Module):
         g = F.sigmoid(g)
         s = F.softmax(s, dim=1)
         gamma = 1 + F.softplus(gamma)
-
+        print 'k.device {}'.format(k.device)
         # Content focus
         wc = self._similarity(k, beta)
-
+        print 'wc.device {}'.format(wc.device)
         # Location focus
         wg = self._interpolate(w_prev, wc, g)
+        print 'wg.device {}'.format(wg.device)
         w_hat = self._shift(wg, s)
         w = self._sharpen(w_hat, gamma)
 
