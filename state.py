@@ -6,8 +6,9 @@ from torch.nn import Parameter
 from torch import nn
 import numpy as np
 
-class ReadState:
+class ReadState(nn.Module):
     def __init__(self, memory):
+        super(ReadState, self).__init__()
         self.memory = memory
 
     def reset(self, batch_size):
@@ -29,8 +30,9 @@ class ControllerState(nn.Module):
         c = self.lstm_c_bias.clone().repeat(1, batch_size, 1)
         self.state = h, c
 
-class State:
+class State(nn.Module):
     def __init__(self, memory, controller):
+        super(State, self).__init__()
         self.memory = memory
         self.controller = controller
 

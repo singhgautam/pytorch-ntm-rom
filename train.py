@@ -106,6 +106,11 @@ modelcell.state.reset(params.batch_size)
 modelcell.controller.reset_parameters()
 
 modelcell.to(device)
+modelcell.memory.to(device)
+modelcell.state.to(device)
+modelcell.controller.to(device)
+
+print 'Memory is on CUDA : {}'.format(modelcell.memory.memory.is_cuda)
 
 optimizer = optim.RMSprop(modelcell.parameters(),
                           momentum=params.rmsprop_momentum,
@@ -125,6 +130,9 @@ for batch_num in range(params.num_batches):
 
     # generate data for the copy task
     X, Y = generate_random_batch(params)
+
+    X.to(device)
+    Y.to(device)
 
     # input phase
     for i in range(X.size(0)):
