@@ -6,7 +6,6 @@ from rom import ROM
 from state import State
 import numpy as np
 
-
 def _split_cols(mat, lengths):
     """Split a 2D matrix to variable length columns."""
     assert mat.size()[1] == sum(lengths), "Lengths must be summed to num columns"
