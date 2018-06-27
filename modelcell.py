@@ -64,6 +64,7 @@ class ModelCell(nn.Module):
         self.state.readstate.w = self.memory.address(k, beta, g, s, gamma, self.state.readstate.w)
         self.state.readstate.r = self.memory.read(self.state.readstate.w)
         self.memory.write(X)
+        cout = cout * 0.0 # mask out the controller output
         outp = self.fc2(torch.cat([cout, self.state.readstate.r], dim=1))
 
         return outp

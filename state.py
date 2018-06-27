@@ -6,6 +6,7 @@ from torch.nn import Parameter
 from torch import nn
 import numpy as np
 
+
 class ReadState(nn.Module):
     def __init__(self, memory):
         super(ReadState, self).__init__()
@@ -20,8 +21,12 @@ class ReadState(nn.Module):
         self.w[:,0] = 1.0 # set reader attention at first spot in the memory
         self.r = self.memory.read(self.w)
 
+        print self.device
         self.w.to(self.device)
         self.r.to(self.device)
+        print self.w.is_cuda
+        print self.r.is_cuda
+
 
 class ControllerState(nn.Module):
     def __init__(self, controller):
