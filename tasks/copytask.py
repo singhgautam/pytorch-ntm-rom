@@ -36,5 +36,7 @@ class CopyTaskParams(object):
         inp[:seq_len, :, :self.sequence_width] = seq
         inp[seq_len, :, self.sequence_width] = 1.0  # delimiter in our control channel
         outp = seq.clone()
+        if device == torch.device('cuda'):
+            outp = outp.cuda()
         print 'copytask.outp.device {}'.format(outp.device)
         return inp, outp
