@@ -35,6 +35,6 @@ class CopyTaskParams(object):
         inp = torch.zeros(seq_len + 1, 1, self.sequence_width + 1, device = device)
         inp[:seq_len, :, :self.sequence_width] = seq
         inp[seq_len, :, self.sequence_width] = 1.0  # delimiter in our control channel
-        outp = torch.Tensor(seq, device = device)
-
+        outp = seq.clone()
+        print 'copytask.outp.device {}'.format(outp.device)
         return inp, outp
