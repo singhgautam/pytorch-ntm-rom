@@ -20,9 +20,6 @@ class ReadState(nn.Module):
         self.w = torch.zeros(batch_size, self.memory.N, device = self.device)
         self.w[:,0] = 1.0 # set reader attention at first spot in the memory
         self.r = self.memory.read(self.w)
-        print self.device
-        print self.w.is_cuda
-        print self.r.is_cuda
 
 
 class ControllerState(nn.Module):
@@ -43,8 +40,6 @@ class ControllerState(nn.Module):
     def reset(self, batch_size):
         h = self.lstm_h_bias.clone().repeat(1, batch_size, 1)
         c = self.lstm_c_bias.clone().repeat(1, batch_size, 1)
-        h.to(self.device)
-        c.to(self.device)
         self.state = h, c
 
 class State(nn.Module):

@@ -41,8 +41,7 @@ class ROM(nn.Module):
         self.write_loc = 0
 
         stdev = 1 / (np.sqrt(self.N + self.M))
-        self.memory = torch.randn(self.N, self.M).repeat(batch_size, 1, 1) * stdev
-        self.memory.to(self.device)
+        self.memory = torch.randn(self.N, self.M, device = self.device).repeat(batch_size, 1, 1) * stdev
 
     def visualize(self, savefile):
         torchvision.utils.save_image(self.memory, savefile)
