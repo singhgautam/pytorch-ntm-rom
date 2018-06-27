@@ -108,6 +108,8 @@ class ROM(nn.Module):
         return result
 
     def _sharpen(self, w_hat, gamma):
+        print 'w_hat.device {}'.format(w_hat.device)
+        print 'gamma.device {}'.format(gamma.device)
         w = w_hat ** gamma
         w = torch.div(w, torch.sum(w, dim=1).view(-1, 1) + 1e-16)
         return w
