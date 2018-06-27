@@ -14,11 +14,17 @@ class LSTMController(nn.Module):
         self.num_outputs = num_outputs
         self.num_layers = num_layers
 
+        self.device = torch.device("cpu")
+        if torch.cuda.is_available():
+            self.device = torch.device("cuda")
+
         self.lstm = nn.LSTM(input_size=num_inputs,
                             hidden_size=num_outputs,
                             num_layers=num_layers)
 
         self.reset_parameters()
+
+        self.to(self.device)
 
 
     def reset_parameters(self, stdv=1e-1):

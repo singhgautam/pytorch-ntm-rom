@@ -106,16 +106,6 @@ modelcell.memory.reset(params.batch_size)
 modelcell.state.reset(params.batch_size)
 modelcell.controller.reset_parameters()
 
-# put everything onto device (cuda)
-modelcell.to(device)
-modelcell.memory.memory.to(device)
-modelcell.controller.to(device)
-h, c = modelcell.state.controllerstate.state
-h.to(device)
-c.to(device)
-modelcell.state.readstate.w.to(device)
-modelcell.state.readstate.r.to(device)
-
 print 'Memory is on CUDA : {}'.format(modelcell.memory.memory.is_cuda)
 
 optimizer = optim.RMSprop(modelcell.parameters(),

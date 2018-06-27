@@ -31,6 +31,10 @@ class ROM(nn.Module):
         self.N = N
         self.M = M
 
+        self.device = torch.device("cpu")
+        if torch.cuda.is_available():
+            self.device = torch.device("cuda")
+
     def reset(self, batch_size):
         """Reset the memory"""
         self.batch_size = batch_size
@@ -38,6 +42,7 @@ class ROM(nn.Module):
 
         stdev = 1 / (np.sqrt(self.N + self.M))
         self.memory = torch.randn(self.N, self.M).repeat(batch_size, 1, 1) * stdev
+        self.memory.to(self.device)
 
     def visualize(self, savefile):
         torchvision.utils.save_image(self.memory, savefile)

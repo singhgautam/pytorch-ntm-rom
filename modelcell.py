@@ -20,6 +20,10 @@ class ModelCell(nn.Module):
     def __init__(self, params):
         super(ModelCell, self).__init__()
 
+        self.device = torch.device("cpu")
+        if torch.cuda.is_available():
+            self.device = torch.device("cuda")
+
         # set params
         self.params = params
 
@@ -46,6 +50,8 @@ class ModelCell(nn.Module):
             nn.Linear(params.controller_size + self.memory.M, params.sequence_width + 1),
             nn.Sigmoid()
         )
+
+        self.to(self.device)
 
     def reset_parameters(self, stdv=1e-1):
         for weight in self.parameters():

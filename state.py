@@ -11,23 +11,38 @@ class ReadState(nn.Module):
         super(ReadState, self).__init__()
         self.memory = memory
 
+        self.device = torch.device("cpu")
+        if torch.cuda.is_available():
+            self.device = torch.device("cuda")
+
     def reset(self, batch_size):
         self.w = torch.zeros(batch_size, self.memory.N)
         self.w[:,0] = 1.0 # set reader attention at first spot in the memory
         self.r = self.memory.read(self.w)
+
+        self.w.to(self.device)
+        self.r.to(self.device)
 
 class ControllerState(nn.Module):
     def __init__(self, controller):
         super(ControllerState, self).__init__()
         self.controller = controller
 
+        self.device = torch.device("cpu")
+        if torch.cuda.is_available():
+            self.device = torch.device("cuda")
+
         # starting hidden state is a learned parameter
         self.lstm_h_bias = Parameter(torch.randn(self.controller.num_layers, 1, self.controller.num_outputs) * 0.05)
         self.lstm_c_bias = Parameter(torch.randn(self.controller.num_layers, 1, self.controller.num_outputs) * 0.05)
 
+        self.to(self.device)
+
     def reset(self, batch_size):
         h = self.lstm_h_bias.clone().repeat(1, batch_size, 1)
         c = self.lstm_c_bias.clone().repeat(1, batch_size, 1)
+        h.to(self.device)
+        c.to(self.device)
         self.state = h, c
 
 class State(nn.Module):
