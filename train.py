@@ -43,7 +43,7 @@ def generate_random_batch(params, device = device):
     inp = torch.zeros(seq_len + 1, params.batch_size, params.sequence_width + 1, device = device)
     inp[:seq_len, :, :params.sequence_width] = seq
     inp[seq_len, :, params.sequence_width] = 1.0  # delimiter in our control channel
-    outp = seq.clone()
+    outp = torch.Tensor(seq, device = device)
 
     return inp, outp
 
