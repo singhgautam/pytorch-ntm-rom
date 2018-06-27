@@ -26,13 +26,13 @@ class CopyTaskParams(object):
     save_every = attrib(default=100, convert=int)
     illustrate_every = attrib(default=100, convert=int)
 
-    def get_illustrative_sample(self):
+    def get_illustrative_sample(self, device = 'cpu'):
         '''Sequence will represent a rectified sine wave'''
         seq_len = self.sequence_max_len
-        seq = torch.zeros(seq_len, 1, self.sequence_width)
+        seq = torch.zeros(seq_len, 1, self.sequence_width, device = device)
         for i in range(seq_len):
             seq[i,0,int(self.sequence_width*abs(math.sin(2*i*math.pi/seq_len)))%self.sequence_width] = 1.0
-        inp = torch.zeros(seq_len + 1, 1, self.sequence_width + 1)
+        inp = torch.zeros(seq_len + 1, 1, self.sequence_width + 1, device = device)
         inp[:seq_len, :, :self.sequence_width] = seq
         inp[seq_len, :, self.sequence_width] = 1.0  # delimiter in our control channel
         outp = seq.clone()

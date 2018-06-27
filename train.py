@@ -136,8 +136,8 @@ for batch_num in range(params.num_batches):
         _ = modelcell(X[i])
 
     # output phase
-    Y_out = torch.zeros(Y.size())
-    X_zero = torch.zeros(params.batch_size, params.sequence_width + 1)
+    Y_out = torch.zeros(Y.size(), device = device)
+    X_zero = torch.zeros(params.batch_size, params.sequence_width + 1, device = device)
     for i in range(Y.size(0)):
         Y_out[i] = modelcell(X_zero)[:,:params.sequence_width]
 
@@ -161,20 +161,20 @@ for batch_num in range(params.num_batches):
                       sum(bad_bits_history[-params.save_every:])/params.save_every)
 
     if batch_num % params.illustrate_every == 0 :
-        X, Y = params.get_illustrative_sample()
+        X, Y = params.get_illustrative_sample(device=device)
 
         modelcell.memory.reset(1)
         modelcell.state.reset(1)
 
-        attention_history = torch.zeros(Y.size(0), modelcell.memory.N)
+        attention_history = torch.zeros(Y.size(0), modelcell.memory.N, device = device)
 
         # input phase
         for i in range(X.size(0)):
             _ = modelcell(X[i])
 
         # output phase
-        Y_out = torch.zeros(Y.size())
-        X_zero = torch.zeros(1, params.sequence_width + 1)
+        Y_out = torch.zeros(Y.size(), device = device)
+        X_zero = torch.zeros(1, params.sequence_width + 1, device = device)
         for i in range(Y.size(0)):
             Y_out[i] = modelcell(X_zero)[:, :params.sequence_width]
             attention_history[i] = modelcell.state.readstate.w.squeeze()
@@ -183,8 +183,8 @@ for batch_num in range(params.num_batches):
         Y_out_binary.apply_(lambda x: 0 if x < 0.5 else 1)
 
         # generate images
-        torchvision.utils.save_image(X.squeeze(1), 'imsaves/illustrations/batch-{}-X.png'.format(batch_num))
-        torchvision.utils.save_image(Y_out.squeeze(1), 'imsaves/illustrations/batch-{}-Y.png'.format(batch_num))
-        torchvision.utils.save_image(attention_history, 'imsaves/illustrations/batch-{}-attention.png'.format(batch_num))
-        torchvision.utils.save_image(Y_out_binary.squeeze(1), 'imsaves/illustrations/batch-{}-Y-binary.png'.format(batch_num))
-        torchvision.utils.save_image(modelcell.memory.memory.squeeze(0), 'imsaves/illustrations/batch-{}-mem.png'.format(batch_num))
+        torchvision.utils.save_image(X.cpu().detach().squeeze(1), 'imsaves/illustrations/batch-{}-X.png'.format(batch_num))
+        torchvision.utils.save_image(Y_out.cpu().detach().squeeze(1), 'imsaves/illustrations/batch-{}-Y.png'.format(batch_num))
+        torchvision.utils.save_image(attention_history.cpu().detach(), 'imsaves/illustrations/batch-{}-attention.png'.format(batch_num))
+        torchvision.utils.save_image(Y_out_binary.cpu().detach().squeeze(1), 'imsaves/illustrations/batch-{}-Y-binary.png'.format(batch_num))
+        torchvision.utils.save_image(modelcell.memory.memory.cpu().detach().squeeze(0), 'imsaves/illustrations/batch-{}-mem.png'.format(batch_num))
