@@ -47,9 +47,6 @@ def generate_random_batch(params, device = 'cpu'):
     if device == torch.device('cuda'):
         outp = outp.cuda()
 
-    print 'train.outp.device {}'.format(outp.device)
-    print 'seq.device {}'.format(seq.device)
-
     return inp, outp
 
 def clip_grads(model, range):
@@ -153,10 +150,10 @@ for batch_num in range(params.num_batches):
     clip_grads(modelcell, 10)
     optimizer.step()
 
-    Y_out_binary = Y_out.clone().data
+    Y_out_binary = Y_out.cpu().clone().data
     Y_out_binary.apply_(lambda x: 0 if x < 0.5 else 1)
 
-    bad_bits = torch.sum(torch.abs(Y_out_binary - Y_out))
+    bad_bits = torch.sum(torch.abs(Y_out_binary - Y_out.cpu()))
     bad_bits_history.append(bad_bits)
 
     batch_progress_bar(batch_num+1, params.num_batches, last_loss=loss, bad_bits=bad_bits)
@@ -184,7 +181,7 @@ for batch_num in range(params.num_batches):
             Y_out[i] = modelcell(X_zero)[:, :params.sequence_width]
             attention_history[i] = modelcell.state.readstate.w.squeeze()
 
-        Y_out_binary = Y_out.clone().data
+        Y_out_binary = Y_out.cpu().clone().data
         Y_out_binary.apply_(lambda x: 0 if x < 0.5 else 1)
 
         # generate images

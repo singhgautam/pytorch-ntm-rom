@@ -38,5 +38,4 @@ class CopyTaskParams(object):
         outp = seq.clone()
         if device == torch.device('cuda'):
             outp = outp.cuda()
-        print 'copytask.outp.device {}'.format(outp.device)
         return inp, outp
