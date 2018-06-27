@@ -30,7 +30,7 @@ def init_seed(seed=None):
     torch.manual_seed(seed)
     random.seed(seed)
 
-def generate_random_batch(params, device = device):
+def generate_random_batch(params, device = 'cpu'):
     # All batches have the same sequence length
     seq_len = random.randint(params.sequence_min_len,
                              params.sequence_max_len)
@@ -43,9 +43,11 @@ def generate_random_batch(params, device = device):
     inp = torch.zeros(seq_len + 1, params.batch_size, params.sequence_width + 1, device = device)
     inp[:seq_len, :, :params.sequence_width] = seq
     inp[seq_len, :, params.sequence_width] = 1.0  # delimiter in our control channel
-    outp = seq.clone()
+    outp = torch.Tensor(seq.size(), device = device)
+    outp.data = seq.data
 
     print 'train.outp.device {}'.format(outp.device)
+    print 'seq.device {}'.format(seq.device)
 
     return inp, outp
 
