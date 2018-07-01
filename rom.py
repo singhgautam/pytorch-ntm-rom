@@ -42,6 +42,7 @@ class ROM(nn.Module):
 
         stdev = 1 / (np.sqrt(self.N + self.M))
         self.memory = torch.randn(self.N, self.M, device = self.device).repeat(batch_size, 1, 1) * stdev
+        self.memory.abs_()
 
     def visualize(self, savefile):
         torchvision.utils.save_image(self.memory, savefile)
@@ -77,7 +78,7 @@ class ROM(nn.Module):
         :param w_prev: The weighting produced in the previous time step.
         """
 
-        k = k.clone()
+        # k = k.clone()
         beta = F.softplus(beta)
         g = F.sigmoid(g)
         s = F.softmax(s, dim=1)

@@ -147,6 +147,7 @@ for batch_num in range(params.num_batches):
     loss_history.append(loss)
 
     loss.backward()
+
     clip_grads(modelcell, 10)
     optimizer.step()
 
@@ -168,18 +169,19 @@ for batch_num in range(params.num_batches):
         modelcell.memory.reset(1)
         modelcell.state.reset(1)
 
-        attention_history = torch.zeros(Y.size(0), modelcell.memory.N, device = device)
+        attention_history = torch.zeros(X.size(0) + Y.size(0), modelcell.memory.N, device = device)
 
         # input phase
         for i in range(X.size(0)):
             _ = modelcell(X[i])
+            attention_history[i] = modelcell.state.readstate.w.squeeze()
 
         # output phase
         Y_out = torch.zeros(Y.size(), device = device)
         X_zero = torch.zeros(1, params.sequence_width + 1, device = device)
         for i in range(Y.size(0)):
             Y_out[i] = modelcell(X_zero)[:, :params.sequence_width]
-            attention_history[i] = modelcell.state.readstate.w.squeeze()
+            attention_history[X.size(0) + i] = modelcell.state.readstate.w.squeeze()
 
         Y_out_binary = Y_out.cpu().clone().data
         Y_out_binary.apply_(lambda x: 0 if x < 0.5 else 1)
